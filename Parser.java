@@ -1,31 +1,29 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.lang.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.File;
 
-public class Parser{
+
+public class lab2{
 
     private static final String[] operations = {"and", "or", "add", "addi", "sll", "sub", "slt", "beq", "bne", "lw", "sw", "j", "jr", "jal"};
     private static final HashMap<String, Integer> labelsAndAddresses = new HashMap<>();
     private static final HashMap<String, String> registersAndBinary = new HashMap<>();
     private static int lineNumber = -1;
     private static int lineNumber1 = -1;
+    private static final ArrayList <String[]> Instructions = new ArrayList<>();
     private static String a;
     private static String b;
     private static String c;
-    private static String d;
 
     public static void main(String[] args) throws IOException {
-    
-        if (0 < args.length) {
-            String filename = args[0];
-            File file = new File(filename);
-            
-            BufferedReader br = new BufferedReader(new FileReader(file));
+
+        BufferedReader br = new BufferedReader(new FileReader("C:/Users/HP/Desktop/Cal Poly/Classes/CPE 315 (Computer Architecture MIPS ASSEMBLY & JAVA)/Lab 2/src/test1.asm"));
 
         for (String line = br.readLine(); line != null; line = br.readLine()) {
             if (isBlank(line)) {
@@ -89,7 +87,7 @@ public class Parser{
         registersAndBinary.put("$ra", "11111");
 
 
-        BufferedReader br1 = new BufferedReader(new FileReader(file));
+        BufferedReader br1 = new BufferedReader(new FileReader("C:/Users/HP/Desktop/Cal Poly/Classes/CPE 315 (Computer Architecture MIPS ASSEMBLY & JAVA)/Lab 2/src/test1.asm"));
 
         for (String line = br1.readLine(); line != null; line = br1.readLine()) {
             outerLoop:
@@ -100,6 +98,7 @@ public class Parser{
                             lineNumber1++;
                             String[] components = line.split("[ ,\t#:]+");
                             components = containsOpcode(components);
+                            Instructions.add(components);
                             System.out.println();
                             break outerLoop;
                         }
@@ -107,27 +106,27 @@ public class Parser{
                     }
 
                     for (String op : operations) {
-                        /*System.out.println(!line.isBlank());
-                        System.out.println(!isContain(line, "#"));
-                        System.out.println(!line.contains(":"));*/
                         if (isBlank(line) && !line.contains("#") && !line.contains(":") && !isContain(line, op)){
                             System.out.println("invalid instruction: " + line.substring(0, 4));
                             System.exit(1);
                         }
                     }
-                    
+
                 }
 
 
             }
 
         }
+
+
+        for (String[] instruction : Instructions) {
+            System.out.println(Arrays.toString(instruction));
         }
 
-        
-
-
     }
+
+
 
     public static String[] slice(String[] arr, int start, int end) {
 
@@ -210,16 +209,16 @@ public class Parser{
                         }
                     }
 
-                    else if (c.length() < 16){
+                    else {
                         if (x < 0){
                             if (c.charAt(0) == '1'){
                                 c = "1" + c;
                             }
                             if (c.charAt(0) == '0'){
-
+                                c = "0" + c;
                             }
                         }
-                        else if (x >= 0){
+                        else {
                             c = "0" + c;
                         }
 
@@ -258,16 +257,16 @@ public class Parser{
                         }
                     }
 
-                    else if (c.length() < 5){
+                    else {
                         if (x < 0){
                             if (c.charAt(0) == '1'){
                                 c = "1" + c;
                             }
                             if (c.charAt(0) == '0'){
-
+                                c = "0" + c;
                             }
                         }
-                        else if (x >= 0){
+                        else {
                             c = "0" + c;
                         }
                     }
@@ -285,42 +284,8 @@ public class Parser{
                 array = slice(array, i, i + 4);
                 System.out.print("000100 ");
 
-                for (String key : registersAndBinary.keySet()){
-                    if (array[1].equals(key)) a = registersAndBinary.get(key);
-                    if (array[2].equals(key)) b = registersAndBinary.get(key);
+                branch(array);
 
-                }
-
-                int x = (-(lineNumber1 + 1) + labelsAndAddresses.get(array[3]));
-                c = Integer.toBinaryString(x);
-
-
-                while (c.length() != 16){
-
-                    if (c.length() > 16){
-                        if (c.charAt(0) == '1'){
-                            c = c.substring(1);
-                        }
-                        if (c.charAt(0) == '0'){
-                            c = c.replace("0", "");
-                        }
-                    }
-
-                    else if (c.length() < 16){
-                        if (x < 0){
-                            if (c.charAt(0) == '1'){
-                                c = "1" + c;
-                            }
-                            if (c.charAt(0) == '0'){
-
-                            }
-                        }
-                        else if (x >= 0){
-                            c = "0" + c;
-                        }
-                    }
-
-                }
                 System.out.print(a + " " + b + " " + c);
                 break;
             }
@@ -333,42 +298,7 @@ public class Parser{
                 array = slice(array, i, i + 4);
                 System.out.print("000101 ");
 
-                for (String key : registersAndBinary.keySet()){
-                    if (array[1].equals(key)) a = registersAndBinary.get(key);
-                    if (array[2].equals(key)) b = registersAndBinary.get(key);
-
-                }
-
-                int x = (-(lineNumber1 + 1) + labelsAndAddresses.get(array[3]));
-                c = Integer.toBinaryString(x);
-
-
-                while (c.length() != 16){
-
-                    if (c.length() > 16){
-                        if (c.charAt(0) == '1'){
-                            c = c.substring(1);
-                        }
-                        if (c.charAt(0) == '0'){
-                            c = c.replace("0", "");
-                        }
-                    }
-
-                    else if (c.length() < 16){
-                        if (x < 0){
-                            if (c.charAt(0) == '1'){
-                                c = "1" + c;
-                            }
-                            if (c.charAt(0) == '0'){
-
-                            }
-                        }
-                        else if (x >= 0){
-                            c = "0" + c;
-                        }
-                    }
-
-                }
+                branch(array);
 
                 System.out.print(a + " " + b + " " + c);
                 break;
@@ -382,41 +312,7 @@ public class Parser{
                 array = slice(array, i, i + 3);
                 System.out.print("100011 ");
 
-                for (String key : registersAndBinary.keySet()){
-                    if (array[1].equals(key)) a = registersAndBinary.get(key);
-                    if (array[2].substring(2,5).equals(key)) b = registersAndBinary.get(key);
-                }
-
-                int y = Character.getNumericValue(array[2].charAt(0));
-                c = Integer.toBinaryString(y);
-
-                while (c.length() != 16){
-
-                    if (c.length() > 16){
-                        if (c.charAt(0) == '1'){
-                            c = c.substring(1);
-                        }
-                        if (c.charAt(0) == '0'){
-                            c = c.replace("0", "");
-                        }
-                    }
-
-                    else if (c.length() < 16){
-                        if (y < 0){
-                            if (c.charAt(0) == '1'){
-                                c = "1" + c;
-                            }
-                            if (c.charAt(0) == '0'){
-
-                            }
-                        }
-                        else if (y >= 0){
-                            c = "0" + c;
-                        }
-
-                    }
-
-                }
+                loadStore(array);
 
                 System.out.print(b + " " + a + " " + c);
 
@@ -432,41 +328,7 @@ public class Parser{
                 array = slice(array, i, i + 3);
                 System.out.print("101011 ");
 
-                for (String key : registersAndBinary.keySet()){
-                    if (array[1].equals(key)) a = registersAndBinary.get(key);
-                    if (array[2].substring(2,5).equals(key)) b = registersAndBinary.get(key);
-                }
-
-                int y = Character.getNumericValue(array[2].charAt(0));
-                c = Integer.toBinaryString(y);
-
-                while (c.length() != 16){
-
-                    if (c.length() > 16){
-                        if (c.charAt(0) == '1'){
-                            c = c.substring(1);
-                        }
-                        if (c.charAt(0) == '0'){
-                            c = c.replace("0", "");
-                        }
-                    }
-
-                    else if (c.length() < 16){
-                        if (y < 0){
-                            if (c.charAt(0) == '1'){
-                                c = "1" + c;
-                            }
-                            if (c.charAt(0) == '0'){
-
-                            }
-                        }
-                        else if (y >= 0){
-                            c = "0" + c;
-                        }
-
-                    }
-
-                }
+                loadStore(array);
 
                 System.out.print(b + " " + a + " " + c);
 
@@ -480,35 +342,7 @@ public class Parser{
                 array = slice(array, i, i + 2);
                 System.out.print("000010 ");
 
-                int x = labelsAndAddresses.get(array[1]);
-                c = Integer.toBinaryString(x);
-
-                while (c.length() != 26){
-
-                    if (c.length() > 26){
-                        if (c.charAt(0) == '1'){
-                            c = c.substring(1);
-                        }
-                        if (c.charAt(0) == '0'){
-                            c = c.replace("0", "");
-                        }
-                    }
-
-                    else if (c.length() < 26){
-                        if (x < 0){
-                            if (c.charAt(0) == '1'){
-                                c = "1" + c;
-                            }
-                            if (c.charAt(0) == '0'){
-
-                            }
-                        }
-                        else if (x >= 0){
-                            c = "0" + c;
-                        }
-                    }
-
-                }
+                jump(array);
 
                 System.out.print(c);
                 break;
@@ -534,37 +368,7 @@ public class Parser{
                 array = slice(array, i, i + 2);
                 System.out.print("000011 ");
 
-                int x = labelsAndAddresses.get(array[1]);
-                c = Integer.toBinaryString(x);
-
-                while (c.length() != 26){
-
-                    if (c.length() > 26){
-                        if (c.charAt(0) == '1'){
-                            c = c.substring(1);
-                        }
-                        if (c.charAt(0) == '0'){
-                            c = c.replace("0", "");
-                        }
-                    }
-
-                    else if (c.length() < 26){
-                        if (x < 0){
-
-                            if (c.charAt(0) == '1'){
-                                c = "1" + c;
-                            }
-
-                            if (c.charAt(0) == '0'){
-                            }
-                        }
-
-                        else if (x >= 0){
-                            c = "0" + c;
-                        }
-                    }
-
-                }
+                jump(array);
 
                 System.out.print(c);
                 break;
@@ -606,10 +410,10 @@ public class Parser{
 
         String [] temp = new String[original.length + 1];
 
-            temp[0] = original[0].substring(0,3);
-            temp[1] = original[0].substring(5, 8);
-            temp[2] = original[1];
-            temp[3] = original[2];
+        temp[0] = original[0].substring(0,3);
+        temp[1] = original[0].substring(5, 8);
+        temp[2] = original[1];
+        temp[3] = original[2];
 
         original = temp;
         return original;
@@ -622,6 +426,117 @@ public class Parser{
         Matcher m=p.matcher(source);
         return m.find();
     }
-    
-}
 
+    private static void branch(String [] inst){
+        for (String key : registersAndBinary.keySet()){
+            if (inst[1].equals(key)) a = registersAndBinary.get(key);
+            if (inst[2].equals(key)) b = registersAndBinary.get(key);
+
+        }
+
+        int x = (-(lineNumber1 + 1) + labelsAndAddresses.get(inst[3]));
+        c = Integer.toBinaryString(x);
+
+
+        while (c.length() != 16){
+
+            if (c.length() > 16){
+                if (c.charAt(0) == '1'){
+                    c = c.substring(1);
+                }
+                if (c.charAt(0) == '0'){
+                    c = c.replace("0", "");
+                }
+            }
+
+            else {
+                if (x < 0){
+                    if (c.charAt(0) == '1'){
+                        c = "1" + c;
+                    }
+                    if (c.charAt(0) == '0'){
+                        c = "0" + c;
+                    }
+                }
+                else {
+                    c = "0" + c;
+                }
+            }
+
+        }
+    }
+
+    private static void loadStore(String [] inst ){
+
+        for (String key : registersAndBinary.keySet()){
+            if (inst[1].equals(key)) a = registersAndBinary.get(key);
+            if (inst[2].substring(2,5).equals(key)) b = registersAndBinary.get(key);
+        }
+
+        int y = Character.getNumericValue(inst[2].charAt(0));
+        c = Integer.toBinaryString(y);
+
+        while (c.length() != 16){
+
+            if (c.length() > 16){
+                if (c.charAt(0) == '1'){
+                    c = c.substring(1);
+                }
+                if (c.charAt(0) == '0'){
+                    c = c.replace("0", "");
+                }
+            }
+
+            else {
+                if (y < 0){
+                    if (c.charAt(0) == '1'){
+                        c = "1" + c;
+                    }
+                    if (c.charAt(0) == '0'){
+                        c = "0" + c;
+                    }
+                }
+                else {
+                    c = "0" + c;
+                }
+
+            }
+
+        }
+    }
+
+    private static void jump(String [] inst) {
+
+        int x = labelsAndAddresses.get(inst[1]);
+        c = Integer.toBinaryString(x);
+
+        while (c.length() != 26){
+
+            if (c.length() > 26){
+                if (c.charAt(0) == '1'){
+                    c = c.substring(1);
+                }
+                if (c.charAt(0) == '0'){
+                    c = c.replace("0", "");
+                }
+            }
+
+            else {
+                if (x < 0){
+                    if (c.charAt(0) == '1'){
+                        c = "1" + c;
+                    }
+                    if (c.charAt(0) == '0'){
+                        c = "0" + c;
+                    }
+                }
+                else {
+                    c = "0" + c;
+                }
+            }
+
+        }
+
+    }
+
+}
