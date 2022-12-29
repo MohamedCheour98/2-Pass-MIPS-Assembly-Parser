@@ -1,4 +1,4 @@
-## 2-Pass-Mips-Assembly-Parser
+## 2-Pass-MIPS-Assembly-Parser
 
 This program emulates a 2-Pass MIPS assembly parser that reads in files written in MIPS Assembly, translates them to machine code (Binary) and then displays the result to the screen.
 
